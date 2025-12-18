@@ -1,9 +1,11 @@
-from flask import Blueprint
-from app.utils.decorators import admin_required
+from flask import Blueprint, jsonify
+from flask_jwt_extended import jwt_required
+from app.utils.permissions import admin_required
 
-admin_bp = Blueprint("admin", __name__)
+admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
 @admin_bp.route("/dashboard")
+@jwt_required()
 @admin_required
-def admin_dashboard():
-    return {"message": "Welcome Admin"}
+def dashboard():
+    return jsonify(msg="Admin dashboard")

@@ -34,6 +34,8 @@ def register():
 def login():
     data = request.get_json()
 
+    print("LOGIN PAYLOAD:", data)   #new line
+
     username = data.get("username")
     password = data.get("password")
 

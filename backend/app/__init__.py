@@ -1,13 +1,17 @@
 from flask import Flask
 from .config import Config
 from .extensions import db, jwt, migrate, cors
-from .errors import register_error_handlers
 from .routes import register_routes
-from app import models
+from .errors import register_error_handlers
+from .logging import log_operation
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    @app.before_request
+    def before_request_logging():
+        log_operation()
 
     # Initialize extensions
     db.init_app(app)
@@ -15,9 +19,11 @@ def create_app():
     migrate.init_app(app, db)
     cors.init_app(app)
 
-    # Register error handlers
+    # Import models AFTER app & db are ready
+    from . import models
+
+    # Register routes & errors
     register_routes(app)
     register_error_handlers(app)
 
     return app
-

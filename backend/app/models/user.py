@@ -7,11 +7,15 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(20), default="USER")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    posts = db.relationship("Post", backref="author", lazy=True)
+    posts = db.relationship(
+        "Post",
+        back_populates="author",
+        cascade="all, delete-orphan"
+    )
+
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
