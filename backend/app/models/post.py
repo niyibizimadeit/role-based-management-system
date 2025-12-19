@@ -26,3 +26,5 @@ class Post(db.Model):
         "User",
         back_populates="posts"
     )
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)

@@ -33,7 +33,8 @@ api.interceptors.response.use(
       alert("You do not have permission to perform this action.");
     }
 
-    return Promise.reject(error);
+    return Promise.reject(error.response?.data || error);
+
   }
 );
 

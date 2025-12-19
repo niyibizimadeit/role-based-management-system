@@ -4,10 +4,14 @@ from .extensions import db, jwt, migrate, cors
 from .routes import register_routes
 from .errors import register_error_handlers
 from .logging import log_operation
+from flask_cors import CORS
+
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    CORS(app, supports_credentials=True)
 
     @app.before_request
     def before_request_logging():

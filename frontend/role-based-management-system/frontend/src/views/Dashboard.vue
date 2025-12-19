@@ -39,18 +39,19 @@ import api from "../api/axios";
 const posts = ref([]);
 const title = ref("");
 const content = ref("");
-const error = ref("");
+const loadError = ref("");
+const createError = ref("");
 const loading = ref(false);
 
 const loadPosts = async () => {
   loading.value = true;
-  error.value = "";
+  loadError.value = "";
 
   try {
     const res = await api.get("/posts");
     posts.value = res.data;
   } catch (e) {
-    error.value = "Failed to load posts";
+    loadError.value = "Failed to load posts";
   } finally {
     loading.value = false;
   }
@@ -58,6 +59,8 @@ const loadPosts = async () => {
 
 
 const createPost = async () => {
+  createError.value = "";
+
   try {
     await api.post("/posts", {
       title: title.value,
@@ -66,10 +69,11 @@ const createPost = async () => {
     title.value = "";
     content.value = "";
     loadPosts();
-  } catch {
-    error.value = "Failed to create post";
+  } catch (e) {
+    createError.value = "Failed to create post";
   }
 };
+
 
 onMounted(loadPosts);
 </script>
