@@ -23,6 +23,8 @@ def create_app():
     migrate.init_app(app, db)
     cors.init_app(app)
 
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
+
     # Import models AFTER app & db are ready
     from . import models
 

@@ -6,18 +6,26 @@ from app.extensions import db
 post_bp = Blueprint("posts", __name__, url_prefix="/api")
 
 
+@post_bp.route("/posts", methods=["OPTIONS"])
+def posts_options():
+    return "", 200
+
+
 @post_bp.route("/posts", methods=["POST"])
 @jwt_required()
 def create_post():
-    user_id = get_jwt_identity()
+    identity = get_jwt_identity()
+    user_id = identity["id"] if isinstance(identity, dict) else identity
+
     data = request.get_json()
 
     post = Post(
         title=data["title"],
         content=data["content"],
-        user_id=user_id,
+        author_id=user_id,
         status="pending"
     )
+
     db.session.add(post)
     db.session.commit()
 
@@ -27,14 +35,10 @@ def create_post():
 @post_bp.route("/posts", methods=["GET"])
 @jwt_required()
 def get_posts():
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    identity = get_jwt_identity()
+    user_id = identity["id"] if isinstance(identity, dict) else identity
 
-    if user.role == "admin":
-        posts = Post.query.all()
-    else:
-        posts = Post.query.filter_by(user_id=user_id).all()
-
+    posts = Post.query.filter_by(author_id=user_id).all()
 
     return jsonify([
         {

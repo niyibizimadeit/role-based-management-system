@@ -2,11 +2,20 @@ import { createRouter, createWebHistory } from "vue-router";
 import Login from "../views/Login.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Admin from "../views/Admin.vue";
+import Register from "../views/Register.vue"
+
+
+
 
 const routes = [
   {
     path: "/login",
     component: Login,
+    meta: { public: true },
+  },
+  {
+    path: "/register",
+    component: Register,
     meta: { public: true },
   },
   {
@@ -34,6 +43,10 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
+  console.log("➡️ Navigating to:", to.path);
+  console.log("🔐 Token:", token);
+  console.log("👤 Role:", role);
+
   // Public routes
   if (to.meta.public) {
     return next();
@@ -44,12 +57,13 @@ router.beforeEach((to, from, next) => {
     return next("/login");
   }
 
-  // Role check
-  if (to.meta.role && to.meta.role !== role) {
+  // ADMIN-only protection
+  if (to.meta.role === "ADMIN" && role !== "ADMIN") {
     return next("/dashboard");
   }
 
   next();
 });
+
 
 export default router;

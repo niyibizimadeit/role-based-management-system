@@ -29,11 +29,13 @@
       </div>
     </div>
   </div>
+  <button @click="logout">Logout</button>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import api from "../api/axios";
 
 const posts = ref([]);
@@ -42,6 +44,14 @@ const content = ref("");
 const loadError = ref("");
 const createError = ref("");
 const loading = ref(false);
+
+const router = useRouter();
+
+const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  router.push("/login");
+};
 
 const loadPosts = async () => {
   loading.value = true;
@@ -59,8 +69,6 @@ const loadPosts = async () => {
 
 
 const createPost = async () => {
-  createError.value = "";
-
   try {
     await api.post("/posts", {
       title: title.value,
@@ -69,11 +77,10 @@ const createPost = async () => {
     title.value = "";
     content.value = "";
     loadPosts();
-  } catch (e) {
-    createError.value = "Failed to create post";
+  } catch {
+    error.value = "Failed to create post";
   }
 };
-
 
 onMounted(loadPosts);
 </script>

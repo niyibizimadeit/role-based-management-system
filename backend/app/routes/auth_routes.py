@@ -19,7 +19,7 @@ def register():
     if User.query.filter_by(username=username).first():
         return jsonify(error="Username already exists"), 400
 
-    user = User(username=username, role="USER")
+    user = User(username=username, role="user")
     user.set_password(password)
 
     db.session.add(user)

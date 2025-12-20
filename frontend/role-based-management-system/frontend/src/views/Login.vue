@@ -4,13 +4,20 @@
       <input v-model="username" placeholder="Username" />
       <input v-model="password" type="password" placeholder="Password" />
       <button @click="login">Login</button>
+
+      <p>
+      Don’t have an account?
+      <span @click="goRegister" style="color: blue; cursor: pointer;">
+        Sign up
+      </span>
+      </p>
+
       <p v-if="error">{{ error }}</p>
     </div>
   </template>
   
   <script setup>
-  localStorage.removeItem("token");
-localStorage.removeItem("role");
+
 
   import { ref } from "vue";
   import api from "../api/axios";
@@ -41,5 +48,9 @@ localStorage.removeItem("role");
       error.value = "Invalid credentials";
     }
   };
+
+  const goRegister = () => {
+  router.push("/register") 
+}
   </script>
   

@@ -9,6 +9,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(20), default="USER")
+    is_active = db.Column(db.Boolean, default=True)
 
     posts = db.relationship(
         "Post",
