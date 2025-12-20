@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app.extensions import db
 from app.models import User
+from app.utils.logger import log_action
+
 
 from flask_jwt_extended import create_access_token
 
@@ -50,6 +52,11 @@ def login():
     access_token = create_access_token(
     identity=str(user.id),   # MUST be string
     additional_claims={"role": user.role}
+    )
+
+    log_action(
+        action="Login",
+        target=f"user_id={user.id}"
     )
 
 

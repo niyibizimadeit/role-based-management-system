@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Post
 from app.extensions import db
+from app.utils.logger import log_action
 
 post_bp = Blueprint("posts", __name__, url_prefix="/api")
 
@@ -49,3 +50,42 @@ def get_posts():
         }
         for p in posts
     ])
+@post_bp.route("/posts/<int:post_id>", methods=["PUT"])
+@jwt_required()
+def update_post(post_id):
+    user_id = int(get_jwt_identity())
+    data = request.get_json()
+    post = Post.query.get_or_404(post_id)
+
+    if post.author_id != user_id:
+        return jsonify(error="Forbidden"), 403
+
+    
+    post.title = data.get("title", post.title)
+    post.content = data.get("content", post.content)
+
+    # Reset status so admin re-approves
+    post.status = "pending"
+
+    db.session.commit()
+
+    log_action(
+        action="Updated post",
+        target=f"post_id={post.id}"
+    )
+
+    return jsonify(message="Post updated")
+
+@post_bp.route("/posts/<int:post_id>", methods=["DELETE"])
+@jwt_required()
+def delete_post(post_id):
+    user_id = int(get_jwt_identity())
+    post = Post.query.get_or_404(post_id)
+
+    if post.author_id != user_id:
+        return jsonify(error="Forbidden"), 403
+
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify(message="Post deleted")

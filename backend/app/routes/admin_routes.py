@@ -121,8 +121,15 @@ def delete_user(user_id):
         return jsonify(error="Cannot delete yourself"), 403
 
     user = User.query.get_or_404(user_id)
+    username = user.username
+
     db.session.delete(user)
     db.session.commit()
+
+    log_action(
+        action="Deleted user",
+        target=f"user_id={user_id} ({username})"
+    )
 
     return jsonify(message="User deleted")
 
@@ -169,3 +176,39 @@ def get_logs():
         }
         for l in logs
     ])
+
+@admin_bp.route("/posts/<int:post_id>", methods=["PUT"])
+@jwt_required()
+@admin_required
+def admin_update_post(post_id):
+    data = request.get_json()
+    post = Post.query.get_or_404(post_id)
+
+    post.title = data.get("title", post.title)
+    post.content = data.get("content", post.content)
+    post.status = data.get("status", post.status)
+
+    db.session.commit()
+
+    log_action(
+        action="Admin updated post",
+        target=f"post_id={post.id}"
+    )
+
+    return jsonify(message="Post updated by admin")
+
+@admin_bp.route("/posts/<int:post_id>", methods=["DELETE"])
+@jwt_required()
+@admin_required
+def admin_delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    db.session.delete(post)
+    db.session.commit()
+
+    log_action(
+        action="Admin deleted post",
+        target=f"post_id={post.id}"
+    )
+
+    return jsonify(message="Post deleted by admin")
