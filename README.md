@@ -333,9 +333,9 @@ http://localhost:5173
 
 # Author
 
-**Prince Niyibizi**
+**NIYIBIZI Prince**
 
-Computer Science Student | Software Engineer | AI Enthusiast
+Computer Science Student | Taizhou University
 
 GitHub:
 https://github.com/niyibizimadeit
